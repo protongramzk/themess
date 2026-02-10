@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Themess Playground - Dynamic Color Theme Generator</title>
+    <script src="themess.umd.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: var(--bg-color, #ffffff);
+            color: var(--text-color, #000000);
+            transition: background-color 0.3s, color 0.3s;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary-40, #1f71c6);
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .toggle-btn {
+            background: var(--primary-40, #1f71c6);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .toggle-btn:hover {
+            background: var(--primary-30, #1855a0);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .main {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .section {
+            background: var(--surface-95, #f5f5f5);
+            padding: 24px;
+            border-radius: 12px;
+            border: 1px solid var(--outline, #e0e0e0);
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--primary-40, #1f71c6);
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+        }
+
+        .file-input-label {
+            display: block;
+            padding: 20px;
+            background: var(--primary-40, #1f71c6);
+            color: white;
+            text-align: center;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            border-radius: 8px;
+        }
+
+        .file-input-label:hover {
+            background: var(--primary-30, #1855a0);
+        }
+
+        .file-input-wrapper input[type="file"] {
+            display: none;
+        }
+
+        .file-name {
+            font-size: 12px;
+            color: var(--text-color, #666);
+            margin-top: 8px;
+            text-align: center;
+        }
+
+        .privacy-notice {
+            font-size: 11px;
+            color: var(--text-color, #999);
+            margin-top: 12px;
+            padding: 12px;
+            background: var(--surface-90, #f0f0f0);
+            border-radius: 6px;
+            line-height: 1.4;
+        }
+
+        .preset-themes {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .preset-btn {
+            padding: 12px 16px;
+            border: 2px solid transparent;
+            border-radius: 8px;
+            background: var(--surface-90, #f0f0f0);
+            color: var(--text-color, #000);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+            text-align: left;
+        }
+
+        .preset-btn:hover {
+            border-color: var(--primary-40, #1f71c6);
+            background: var(--primary-95, #f0f5ff);
+        }
+
+        .preset-btn.active {
+            background: var(--primary-40, #1f71c6);
+            color: white;
+            border-color: var(--primary-40, #1f71c6);
+        }
+
+        .content {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .components-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .component-card {
+            background: var(--surface-95, #f5f5f5);
+            padding: 24px;
+            border-radius: 12px;
+            border: 1px solid var(--outline, #e0e0e0);
+        }
+
+        .component-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-color, #666);
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .button-demo {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary-40, #1f71c6);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-30, #1855a0);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(31, 113, 198, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--secondary-40, #5d5a72);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: var(--secondary-30, #474559);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(93, 90, 114, 0.3);
+        }
+
+        .btn-accent {
+            background: var(--accent-40, #d85b08);
+            color: white;
+        }
+
+        .btn-accent:hover {
+            background: var(--accent-30, #a84606);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(216, 91, 8, 0.3);
+        }
+
+        .color-swatch {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .swatch {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            border: 1px solid var(--outline, #e0e0e0);
+        }
+
+        .swatch-label {
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .text-demo {
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .text-primary {
+            background: var(--primary-95, #f0f5ff);
+            color: var(--primary-40, #1f71c6);
+        }
+
+        .text-secondary {
+            background: var(--secondary-95, #f2f0f7);
+            color: var(--secondary-40, #5d5a72);
+        }
+
+        .text-accent {
+            background: var(--accent-95, #fdf0eb);
+            color: var(--accent-40, #d85b08);
+        }
+
+        .gradient-demo {
+            height: 60px;
+            border-radius: 8px;
+            background: linear-gradient(90deg, var(--primary-30, #1855a0), var(--primary-80, #a8c9e8));
+        }
+
+        .input-demo {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid var(--outline, #e0e0e0);
+            border-radius: 6px;
+            background: var(--surface-98, #fafafa);
+            color: var(--text-color, #000);
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .input-demo:focus {
+            outline: none;
+            border-color: var(--primary-40, #1f71c6);
+            background: var(--surface-99, #ffffff);
+        }
+
+        .palette-info {
+            background: var(--surface-90, #f0f0f0);
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .palette-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 0;
+        }
+
+        .palette-label {
+            font-weight: 600;
+            color: var(--text-color, #666);
+        }
+
+        .palette-value {
+            color: var(--text-color, #999);
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+        }
+
+        @media (max-width: 768px) {
+            .main {
+                grid-template-columns: 1fr;
+            }
+
+            .components-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .title {
+                font-size: 24px;
+            }
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-color, #666);
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid var(--outline, #e0e0e0);
+            border-radius: 50%;
+            border-top-color: var(--primary-40, #1f71c6);
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .tone-showcase {
+            display: flex;
+            height: 30px;
+            border-radius: 6px;
+            overflow: hidden;
+            border: 1px solid var(--outline, #e0e0e0);
+        }
+
+        .tone-box {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 600;
+            color: white;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="title">🎨 Themess Playground</h1>
+            <div class="controls">
+                <button class="toggle-btn" id="themeModeToggle" onclick="toggleDarkMode()">
+                    <span id="modeIcon">🌙</span> Dark
+                </button>
+            </div>
+        </div>
+
+        <div class="main">
+            <div class="sidebar">
+                <!-- Image Upload -->
+                <div class="section">
+                    <div class="section-title">Upload Image</div>
+                    <div class="file-input-wrapper">
+                        <label class="file-input-label" for="imageInput">
+                            📤 Choose Image
+                        </label>
+                        <input type="file" id="imageInput" accept="image/*">
+                        <div class="file-name" id="fileName">No image selected</div>
+                    </div>
+                    <div class="privacy-notice">
+                        ℹ️ Your uploaded images are processed locally in your browser and are never stored or used for any other purpose.
+                    </div>
+                </div>
+
+                <!-- Preset Themes -->
+                <div class="section">
+                    <div class="section-title">Preset Themes</div>
+                    <div class="preset-themes">
+                        <button class="preset-btn active" onclick="applyPreset('ocean')">
+                            🌊 Ocean Blue
+                        </button>
+                        <button class="preset-btn" onclick="applyPreset('sunset')">
+                            🌅 Sunset Orange
+                        </button>
+                        <button class="preset-btn" onclick="applyPreset('forest')">
+                            🌲 Forest Green
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Palette Info -->
+                <div class="section" id="paletteInfo" style="display: none;">
+                    <div class="section-title">Palette Info</div>
+                    <div class="palette-info">
+                        <div class="palette-row">
+                            <span class="palette-label">Primary:</span>
+                            <span class="palette-value" id="primaryInfo">-</span>
+                        </div>
+                        <div class="palette-row">
+                            <span class="palette-label">Secondary:</span>
+                            <span class="palette-value" id="secondaryInfo">-</span>
+                        </div>
+                        <div class="palette-row">
+                            <span class="palette-label">Accent:</span>
+                            <span class="palette-value" id="accentInfo">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Components Showcase -->
+            <div class="content">
+                <div class="section">
+                    <div class="section-title">Component Showcase</div>
+                    <div class="components-grid">
+                        <!-- Buttons -->
+                        <div class="component-card">
+                            <div class="component-label">Primary Button</div>
+                            <button class="button-demo btn-primary">Click Me</button>
+                            <button class="button-demo btn-primary" style="opacity: 0.6;">Disabled</button>
+                        </div>
+
+                        <div class="component-card">
+                            <div class="component-label">Secondary Button</div>
+                            <button class="button-demo btn-secondary">Click Me</button>
+                            <button class="button-demo btn-secondary" style="opacity: 0.6;">Disabled</button>
+                        </div>
+
+                        <div class="component-card">
+                            <div class="component-label">Accent Button</div>
+                            <button class="button-demo btn-accent">Click Me</button>
+                            <button class="button-demo btn-accent" style="opacity: 0.6;">Disabled</button>
+                        </div>
+
+                        <!-- Text Colors -->
+                        <div class="component-card">
+                            <div class="component-label">Primary Text</div>
+                            <div class="text-demo text-primary">Primary colored text with background</div>
+                        </div>
+
+                        <div class="component-card">
+                            <div class="component-label">Secondary Text</div>
+                            <div class="text-demo text-secondary">Secondary colored text with background</div>
+                        </div>
+
+                        <div class="component-card">
+                            <div class="component-label">Accent Text</div>
+                            <div class="text-demo text-accent">Accent colored text with background</div>
+                        </div>
+
+                        <!-- Color Swatches -->
+                        <div class="component-card">
+                            <div class="component-label">Primary Palette</div>
+                            <div class="color-swatch">
+                                <div class="swatch" style="background: var(--primary-40, #1f71c6);"></div>
+                                <div class="swatch-label">Tone 40</div>
+                            </div>
+                            <div class="color-swatch">
+                                <div class="swatch" style="background: var(--primary-80, #a8c9e8);"></div>
+                                <div class="swatch-label">Tone 80</div>
+                            </div>
+                            <div class="color-swatch">
+                                <div class="swatch" style="background: var(--primary-95, #f0f5ff);"></div>
+                                <div class="swatch-label">Tone 95</div>
+                            </div>
+                        </div>
+
+                        <div class="component-card">
+                            <div class="component-label">Secondary Palette</div>
+                            <div class="color-swatch">
+                                <div class="swatch" style="background: var(--secondary-40, #5d5a72);"></div>
+                                <div class="swatch-label">Tone 40</div>
+                            </div>
+                            <div class="color-swatch">
+                                <div class="swatch" style="background: var(--secondary-80, #c9c7dd);"></div>
+                                <div class="swatch-label">Tone 80</div>
+                            </div>
+                            <div class="color-swatch">
+                                <div class="swatch" style="background: var(--secondary-95, #f2f0f7);"></div>
+                                <div class="swatch-label">Tone 95</div>
+                            </div>
+                        </div>
+
+                        <div class="component-card">
+                            <div class="component-label">Accent Palette</div>
+                            <div class="color-swatch">
+                                <div class="swatch" style="background: var(--accent-40, #d85b08);"></div>
+                                <div class="swatch-label">Tone 40</div>
+                            </div>
+                            <div class="color-swatch">
+                                <div class="swatch" style="background: var(--accent-80, #fac5a3);"></div>
+                                <div class="swatch-label">Tone 80</div>
+                            </div>
+                            <div class="color-swatch">
+                                <div class="swatch" style="background: var(--accent-95, #fdf0eb);"></div>
+                                <div class="swatch-label">Tone 95</div>
+                            </div>
+                        </div>
+
+                        <!-- Gradient -->
+                        <div class="component-card">
+                            <div class="component-label">Gradient Demo</div>
+                            <div class="gradient-demo"></div>
+                        </div>
+
+                        <!-- Input Field -->
+                        <div class="component-card">
+                            <div class="component-label">Text Input</div>
+                            <input type="text" class="input-demo" placeholder="Type something...">
+                        </div>
+
+                        <!-- Tone Showcase -->
+                        <div class="component-card">
+                            <div class="component-label">Primary Tones (0-100)</div>
+                            <div class="tone-showcase">
+                                <div class="tone-box" style="background: var(--primary-0, #000000);">0</div>
+                                <div class="tone-box" style="background: var(--primary-25, #0d3a73);">25</div>
+                                <div class="tone-box" style="background: var(--primary-50, #1f71c6);">50</div>
+                                <div class="tone-box" style="background: var(--primary-75, #a8c9e8);">75</div>
+                                <div class="tone-box" style="background: var(--primary-100, #ffffff); color: #000; text-shadow: none;">100</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const { ViewideEngine, ShadesGenerator, SaveSS } = window.Themess;
+
+        let currentMode = 'light';
+        let currentPalette = null;
+        let saveSS = new SaveSS('themess_playground');
+
+        // Preset palettes
+        const presets = {
+            ocean: {
+                primary: { oklch: { L: 0.45, C: 0.2, h: 220 }, rgb: [31, 113, 198] },
+                secondary: { oklch: { L: 0.5, C: 0.15, h: 280 }, rgb: [93, 90, 114] },
+                accent: { oklch: { L: 0.6, C: 0.18, h: 20 }, rgb: [216, 91, 8] },
+                neutral: { oklch: { L: 0.5, C: 0.01, h: 220 }, rgb: [128, 128, 128] }
+            },
+            sunset: {
+                primary: { oklch: { L: 0.5, C: 0.25, h: 30 }, rgb: [255, 140, 80] },
+                secondary: { oklch: { L: 0.45, C: 0.2, h: 280 }, rgb: [180, 100, 150] },
+                accent: { oklch: { L: 0.55, C: 0.22, h: 60 }, rgb: [255, 200, 50] },
+                neutral: { oklch: { L: 0.5, C: 0.01, h: 30 }, rgb: [128, 128, 128] }
+            },
+            forest: {
+                primary: { oklch: { L: 0.45, C: 0.25, h: 150 }, rgb: [50, 160, 120] },
+                secondary: { oklch: { L: 0.5, C: 0.15, h: 200 }, rgb: [80, 130, 180] },
+                accent: { oklch: { L: 0.55, C: 0.2, h: 280 }, rgb: [150, 100, 180] },
+                neutral: { oklch: { L: 0.5, C: 0.01, h: 150 }, rgb: [128, 128, 128] }
+            }
+        };
+
+        // Initialize
+        window.addEventListener('DOMContentLoaded', () => {
+            applyPreset('ocean');
+            setupDarkModeFromSystem();
+        });
+
+        // Image upload handler
+        document.getElementById('imageInput').addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            document.getElementById('fileName').innerHTML = `<div class="loading"><div class="spinner"></div> Extracting colors...</div>`;
+
+            const reader = new FileReader();
+            reader.onload = async (event) => {
+                try {
+                    const imageUrl = event.target.result;
+                    const palette = await ViewideEngine.get(imageUrl);
+                    applyPalette(palette);
+                    document.getElementById('fileName').textContent = `✅ ${file.name}`;
+                } catch (error) {
+                    console.error('Error extracting colors:', error);
+                    document.getElementById('fileName').textContent = '❌ Error processing image';
+                }
+            };
+            reader.readAsDataURL(file);
+        });
+
+        function applyPreset(presetName) {
+            const preset = presets[presetName];
+            applyPalette(preset);
+
+            // Update active button
+            document.querySelectorAll('.preset-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            document.getElementById('fileName').textContent = 'No image selected';
+            document.getElementById('imageInput').value = '';
+        }
+
+        function applyPalette(palette) {
+            currentPalette = palette;
+            const shades = ShadesGenerator.generate(palette);
+
+            // Apply to DOM
+            ShadesGenerator.applyToDOM(shades);
+
+            // Update palette info
+            updatePaletteInfo(palette);
+
+            // Save to localStorage
+            saveSS.register({
+                name: 'current',
+                ':root': ShadesGenerator.exportAsCSS(shades)
+            });
+            saveSS.use('current');
+        }
+
+        function updatePaletteInfo(palette) {
+            const paletteInfo = document.getElementById('paletteInfo');
+            if (palette && palette.primary) {
+                paletteInfo.style.display = 'block';
+                document.getElementById('primaryInfo').textContent = 
+                    `${palette.primary.rgb[0]}, ${palette.primary.rgb[1]}, ${palette.primary.rgb[2]}`;
+                document.getElementById('secondaryInfo').textContent = 
+                    palette.secondary ? `${palette.secondary.rgb[0]}, ${palette.secondary.rgb[1]}, ${palette.secondary.rgb[2]}` : 'N/A';
+                document.getElementById('accentInfo').textContent = 
+                    palette.accent ? `${palette.accent.rgb[0]}, ${palette.accent.rgb[1]}, ${palette.accent.rgb[2]}` : 'N/A';
+            }
+        }
+
+        function toggleDarkMode() {
+            currentMode = currentMode === 'light' ? 'dark' : 'light';
+            applyDarkMode();
+        }
+
+        function applyDarkMode() {
+            const root = document.documentElement;
+            const modeIcon = document.getElementById('modeIcon');
+            const modeBtn = document.getElementById('themeModeToggle');
+
+            if (currentMode === 'dark') {
+                // Dark mode - use darker tones
+                root.style.setProperty('--bg-color', 'var(--neutral-20, #1a1a1a)');
+                root.style.setProperty('--text-color', 'var(--neutral-95, #f5f5f5)');
+                root.style.setProperty('--surface-95', 'var(--neutral-30, #2a2a2a)');
+                root.style.setProperty('--surface-98', 'var(--neutral-25, #242424)');
+                root.style.setProperty('--surface-99', 'var(--neutral-22, #1e1e1e)');
+                root.style.setProperty('--surface-90', 'var(--neutral-35, #303030)');
+                root.style.setProperty('--outline', 'var(--neutral-60, #666666)');
+                modeIcon.textContent = '☀️';
+                modeBtn.textContent = '☀️ Light';
+            } else {
+                // Light mode
+                root.style.setProperty('--bg-color', '#ffffff');
+                root.style.setProperty('--text-color', '#000000');
+                root.style.setProperty('--surface-95', '#f5f5f5');
+                root.style.setProperty('--surface-98', '#fafafa');
+                root.style.setProperty('--surface-99', '#ffffff');
+                root.style.setProperty('--surface-90', '#f0f0f0');
+                root.style.setProperty('--outline', '#e0e0e0');
+                modeIcon.textContent = '🌙';
+                modeBtn.textContent = '🌙 Dark';
+            }
+
+            localStorage.setItem('themess_mode', currentMode);
+        }
+
+        function setupDarkModeFromSystem() {
+            const saved = localStorage.getItem('themess_mode');
+            if (saved) {
+                currentMode = saved;
+            } else {
+                currentMode = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            }
+            applyDarkMode();
+        }
+    </script>
+</body>
+</html>
