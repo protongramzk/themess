@@ -13,7 +13,7 @@ Download the library from the repository:
 ```html
 <script src="path/to/themess.umd.js"></script>
 <script>
-  const { SaveSS, ViewideEngine, ShadesGenerator } = window.Themess;
+  const { SaveSS, ViewideEngine, ShadesGenerator } = window.ThemeSS;
 </script>
 ```
 
